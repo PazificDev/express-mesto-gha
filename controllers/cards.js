@@ -29,16 +29,15 @@ const createCard = (req, res) => {
 
 const deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
+    .orFail()
     .then((card) => {
-      if (!card) {
-        res.status(404).send({ message: 'Карточка с данным id не найдена' });
-      } else {
-        res.status(200).send(card);
-      }
+      res.status(200).send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(400).send({ message: 'Переданы неверные данные' });
+      } else if (err.name === 'DocumentNotFoundError') {
+        res.status(404).send({ message: 'Карточка не найдена' });
       } else {
         res.status(500).send({ message: err.message });
       }

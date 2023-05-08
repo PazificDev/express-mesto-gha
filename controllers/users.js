@@ -56,7 +56,9 @@ const patchUserInfo = (req, res) => {
       res.status(200).send(user);
     })
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
+      if (err.name === 'DocumentNotFoundError') {
+        res.status(404).send({ message: 'Пользователь не найден' });
+      } else if (err.name === 'ValidationError' || err.name === 'CastError') {
         res.status(400).send({ message: 'Переданы неверные данные' });
       } else {
         res.status(500).send({ message: err.message });
@@ -74,7 +76,9 @@ const patchUserAvatar = (req, res) => {
       res.status(200).send(user);
     })
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
+      if (err.name === 'DocumentNotFoundError') {
+        res.status(404).send({ message: 'Пользователь не найден' });
+      } else if (err.name === 'ValidationError' || err.name === 'CastError') {
         res.status(400).send({ message: 'Переданы неверные данные' });
       } else {
         res.status(500).send({ message: err.message });
