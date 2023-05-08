@@ -9,7 +9,7 @@ const { PORT = 3000 } = process.env;
 
 const app = express();
 
-app.use(helmet);
+app.use(helmet());
 app.use((req, res, next) => {
   req.user = {
     _id: '6458b841c8148e48edc52c9f',
