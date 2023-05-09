@@ -52,6 +52,7 @@ const patchUserInfo = (req, res) => {
   } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
+    .orFail()
     .then((user) => {
       res.status(200).send(user);
     })
@@ -72,6 +73,7 @@ const patchUserAvatar = (req, res) => {
   } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
+    .orFail()
     .then((user) => {
       res.status(200).send(user);
     })
