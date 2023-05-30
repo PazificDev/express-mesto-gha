@@ -4,7 +4,6 @@ const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const NotFoundErr = require('../errors/NotFoundErr');
 const BadRequestErr = require('../errors/BadRequestErr');
-const UnauthorizedErr = require('../errors/UnauthorizedErr');
 const AlreadyExistErr = require('../errors/AlreadyExistErr');
 
 const getUsers = (req, res, next) => {
@@ -66,18 +65,28 @@ const createUser = (req, res, next) => {
         avatar,
         email,
         password: hash,
-      });
+      })
+        .then(() => res.status(201).send(
+          {
+            data: {
+              name,
+              about,
+              avatar,
+              email,
+            },
+          },
+        ))
+        .catch((err) => {
+          if (err.code === 11000) {
+            return next(new AlreadyExistErr('Пользователь с данным email уже существует'));
+          } else if (err.name === 'ValidationError') {
+            return next(new BadRequestErr('Переданы неверные данные'));
+          } else {
+            return next(err);
+          }
+        });
     })
-    .then((user) => res.status(201).send(user))
-    .catch((err) => {
-      if (err.code === 11000) {
-        return next(new AlreadyExistErr('Пользователь с данным email уже существует'));
-      } else if (err.name === 'ValidationError') {
-        return next(new BadRequestErr('Переданы неверные данные'));
-      } else {
-        return next(err);
-      }
-    });
+    .catch(next);
 };
 
 const patchUserInfo = (req, res, next) => {
@@ -137,9 +146,7 @@ const login = (req, res, next) => {
       res.send({ token });
     })
     // eslint-disable-next-line arrow-body-style, no-unused-vars
-    .catch((err) => {
-      return next(new UnauthorizedErr('Необходима авторизация'));
-    });
+    .catch(next);
 };
 
 module.exports = {
