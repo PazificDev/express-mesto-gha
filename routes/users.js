@@ -8,6 +8,7 @@ const {
   patchUserInfo,
   patchUserAvatar,
 } = require('../controllers/users');
+const isUrlValidation = require('../middlewares/validation');
 
 userRoutes.get('/', getUsers);
 userRoutes.get('/me', getUser);
@@ -30,7 +31,7 @@ userRoutes.patch('/me', celebrate({
 
 userRoutes.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().required(),
+    avatar: Joi.string().required().custom(isUrlValidation),
   }),
 }), patchUserAvatar);
 

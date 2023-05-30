@@ -1,6 +1,6 @@
 const cardRoutes = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
-
+const isUrlValidation = require('../middlewares/validation');
 const {
   getCards,
   createCard,
@@ -13,7 +13,7 @@ cardRoutes.get('/', getCards);
 cardRoutes.post('/', celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().required(),
+    link: Joi.string().required().custom(isUrlValidation),
   }),
 }), createCard);
 

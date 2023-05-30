@@ -20,16 +20,18 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
-    login: Joi.string().required().min(2).max(30),
+    email: Joi.string().required().email,
     password: Joi.string().required().min(8),
   }),
 }), login);
 
 app.post('/signup', celebrate({
   body: Joi.object().keys({
-    login: Joi.string().required().min(2).max(30),
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    email: Joi.string().required().email,
     password: Joi.string().required().min(8),
-  }).unknown(true),
+  }),
 }), createUser);
 
 app.use('/users', auth, userRouter);
