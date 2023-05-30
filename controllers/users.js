@@ -30,7 +30,9 @@ const getUser = (req, res, next) => {
 
 const getUserById = (req, res, next) => {
   User.findById(req.params.userId)
-    .orFail(next)
+    .orFail(() => {
+      throw new DocumentNotFoundError();
+    })
     .then((user) => {
       res.status(200).send(user);
     })
@@ -93,7 +95,9 @@ const patchUserInfo = (req, res, next) => {
   } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
-    .orFail(next)
+    .orFail(() => {
+      throw new DocumentNotFoundError();
+    })
     .then((user) => {
       res.status(200).send(user);
     })
@@ -114,7 +118,9 @@ const patchUserAvatar = (req, res, next) => {
   } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
-    .orFail(next)
+    .orFail(() => {
+      throw new DocumentNotFoundError();
+    })
     .then((user) => {
       res.status(200).send(user);
     })
