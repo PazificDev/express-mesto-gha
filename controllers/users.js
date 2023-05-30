@@ -1,7 +1,7 @@
 /* eslint-disable no-else-return */
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const { DocumentNotFoundError } = require('mongoose').Error;
+const { mongoose } = require('mongoose');
 const User = require('../models/user');
 const BadRequestErr = require('../errors/BadRequestErr');
 const AlreadyExistErr = require('../errors/AlreadyExistErr');
@@ -15,12 +15,12 @@ const getUsers = (req, res, next) => {
 
 const getUser = (req, res, next) => {
   User.findById(req.user._id)
-    .orFail(next)
+    .orFail()
     .then((user) => {
       res.status(200).send(user);
     })
     .catch((err) => {
-      if (err instanceof DocumentNotFoundError) {
+      if (err instanceof mongoose.Error.DocumentNotFoundError) {
         return next(new NotFoundErr('Пользователь не найден'));
       } else {
         return next(err);
@@ -30,16 +30,14 @@ const getUser = (req, res, next) => {
 
 const getUserById = (req, res, next) => {
   User.findById(req.params.userId)
-    .orFail(() => {
-      throw new DocumentNotFoundError();
-    })
+    .orFail()
     .then((user) => {
       res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
         return next(new BadRequestErr('Переданы неверные данные'));
-      } else if (err instanceof DocumentNotFoundError) {
+      } else if (err instanceof mongoose.Error.DocumentNotFoundError) {
         return next(new NotFoundErr('Пользователь не найден'));
       } else {
         return next(err);
@@ -95,16 +93,14 @@ const patchUserInfo = (req, res, next) => {
   } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
-    .orFail(() => {
-      throw new DocumentNotFoundError();
-    })
+    .orFail()
     .then((user) => {
       res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return next(new BadRequestErr('Переданы неверные данные'));
-      } else if (err instanceof DocumentNotFoundError) {
+      } else if (err instanceof mongoose.Error.DocumentNotFoundError) {
         return next(new NotFoundErr('Пользователь не найден'));
       } else {
         return next(err);
@@ -118,16 +114,14 @@ const patchUserAvatar = (req, res, next) => {
   } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
-    .orFail(() => {
-      throw new DocumentNotFoundError();
-    })
+    .orFail()
     .then((user) => {
       res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return next(new BadRequestErr('Переданы неверные данные'));
-      } else if (err instanceof DocumentNotFoundError) {
+      } else if (err instanceof mongoose.Error.DocumentNotFoundError) {
         return next(new NotFoundErr('Пользователь не найден'));
       } else {
         return next(err);
