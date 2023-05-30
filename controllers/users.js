@@ -1,9 +1,11 @@
 /* eslint-disable no-else-return */
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const { DocumentNotFoundError } = require('mongoose');
 const User = require('../models/user');
 const BadRequestErr = require('../errors/BadRequestErr');
 const AlreadyExistErr = require('../errors/AlreadyExistErr');
+const NotFoundErr = require('../errors/NotFoundErr');
 
 const getUsers = (req, res, next) => {
   User.find({})
@@ -17,7 +19,13 @@ const getUser = (req, res, next) => {
     .then((user) => {
       res.status(200).send(user);
     })
-    .catch(next);
+    .catch((err) => {
+      if (err instanceof DocumentNotFoundError) {
+        return next(new NotFoundErr('Пользователь не найден'));
+      } else {
+        return next(err);
+      }
+    });
 };
 
 const getUserById = (req, res, next) => {
@@ -29,6 +37,8 @@ const getUserById = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         return next(new BadRequestErr('Переданы неверные данные'));
+      } else if (err instanceof DocumentNotFoundError) {
+        return next(new NotFoundErr('Пользователь не найден'));
       } else {
         return next(err);
       }
@@ -90,6 +100,8 @@ const patchUserInfo = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return next(new BadRequestErr('Переданы неверные данные'));
+      } else if (err instanceof DocumentNotFoundError) {
+        return next(new NotFoundErr('Пользователь не найден'));
       } else {
         return next(err);
       }
@@ -109,6 +121,8 @@ const patchUserAvatar = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return next(new BadRequestErr('Переданы неверные данные'));
+      } else if (err instanceof DocumentNotFoundError) {
+        return next(new NotFoundErr('Пользователь не найден'));
       } else {
         return next(err);
       }
