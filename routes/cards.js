@@ -1,6 +1,6 @@
 const cardRoutes = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
-const isUrlValidation = require('../middlewares/validation');
+const { isUrlValidation, correctIdValidation } = require('../middlewares/validation');
 const {
   getCards,
   createCard,
@@ -19,19 +19,19 @@ cardRoutes.post('/', celebrate({
 
 cardRoutes.delete('/:cardId', celebrate({
   params: Joi.object().keys({
-    cardId: Joi.string().required(),
+    cardId: Joi.string().required().custom(correctIdValidation),
   }),
 }), deleteCard);
 
 cardRoutes.put('/:cardId/likes', celebrate({
   params: Joi.object().keys({
-    cardId: Joi.string().required(),
+    cardId: Joi.string().required().custom(correctIdValidation),
   }),
 }), likeCard);
 
 cardRoutes.delete('/:cardId/likes', celebrate({
   params: Joi.object().keys({
-    cardId: Joi.string().required(),
+    cardId: Joi.string().required().custom(correctIdValidation),
   }),
 }), dislikeCard);
 

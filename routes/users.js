@@ -1,5 +1,6 @@
 const userRoutes = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
+const { isUrlValidation, correctIdValidation } = require('../middlewares/validation');
 
 const {
   getUsers,
@@ -8,7 +9,6 @@ const {
   patchUserInfo,
   patchUserAvatar,
 } = require('../controllers/users');
-const isUrlValidation = require('../middlewares/validation');
 
 userRoutes.get('/', getUsers);
 userRoutes.get('/me', getUser);
@@ -16,7 +16,7 @@ userRoutes.get(
   '/:userId',
   celebrate({
     params: Joi.object().keys({
-      userId: Joi.string().required(),
+      userId: Joi.string().required().custom(correctIdValidation),
     }),
   }),
   getUserById,

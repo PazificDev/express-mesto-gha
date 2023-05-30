@@ -8,7 +8,7 @@ const cardRouter = require('./routes/cards');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const NotFoundErr = require('./errors/NotFoundErr');
-const isUrlValidation = require('./middlewares/validation');
+const { isUrlValidation } = require('./middlewares/validation');
 
 const { PORT = 3000 } = process.env;
 
@@ -17,7 +17,7 @@ const app = express();
 app.use(helmet());
 app.use(express.json());
 
-mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
+mongoose.connect('mongodb://127.0.0.1:27017/mestodb1');
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({

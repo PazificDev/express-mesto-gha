@@ -145,7 +145,6 @@ const login = (req, res, next) => {
 
       res.send({ token });
     })
-    // eslint-disable-next-line arrow-body-style, no-unused-vars
     .catch(next);
 };
 

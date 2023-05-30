@@ -8,4 +8,12 @@ const isUrlValidation = (url) => {
   throw new BadRequestErr('Неверный URL');
 };
 
-module.exports = isUrlValidation;
+const correctIdValidation = (id) => {
+  const correctId = /[0-9a-fA-F]{24}/;
+  if (correctId.test(id)) {
+    return id;
+  }
+  throw new BadRequestErr('Неверный ID');
+};
+
+module.exports = { correctIdValidation, isUrlValidation };
