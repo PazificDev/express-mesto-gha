@@ -15,7 +15,7 @@ const getUsers = (req, res, next) => {
 
 const getUser = (req, res, next) => {
   User.findById(req.user._id)
-    .orFail()
+    .orFail(next)
     .then((user) => {
       res.status(200).send(user);
     })
@@ -30,7 +30,7 @@ const getUser = (req, res, next) => {
 
 const getUserById = (req, res, next) => {
   User.findById(req.params.userId)
-    .orFail()
+    .orFail(next)
     .then((user) => {
       res.status(200).send(user);
     })
@@ -93,7 +93,7 @@ const patchUserInfo = (req, res, next) => {
   } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
-    .orFail()
+    .orFail(next)
     .then((user) => {
       res.status(200).send(user);
     })
