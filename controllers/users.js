@@ -1,7 +1,7 @@
 /* eslint-disable no-else-return */
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const { DocumentNotFoundError } = require('mongoose');
+const { DocumentNotFoundError } = require('mongoose').Error;
 const User = require('../models/user');
 const BadRequestErr = require('../errors/BadRequestErr');
 const AlreadyExistErr = require('../errors/AlreadyExistErr');
