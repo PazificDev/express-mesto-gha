@@ -30,8 +30,15 @@ const createCard = (req, res) => {
 const deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
     .orFail()
+    // eslint-disable-next-line consistent-return
     .then((card) => {
-      res.status(200).send(card);
+      if (req.user._id !== card.owner) {
+        return Promise.reject(new Error('Недостаточно прав для удаления'));
+      }
+      card.deleteOne()
+        .then(() => {
+          res.status(200).send({ message: 'Карточка удалена' });
+        });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
