@@ -2,7 +2,6 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
-const NotFoundErr = require('../errors/NotFoundErr');
 const BadRequestErr = require('../errors/BadRequestErr');
 const AlreadyExistErr = require('../errors/AlreadyExistErr');
 
@@ -14,21 +13,11 @@ const getUsers = (req, res, next) => {
 
 const getUser = (req, res, next) => {
   User.findById(req.user._id)
+    .orFail()
     .then((user) => {
-      if (!user) {
-        throw new NotFoundErr('Пользователь с данным id не найден');
-      }
       res.status(200).send(user);
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return next(new BadRequestErr('Переданы неверные данные'));
-      } else if (err.name === 'DocumentNotFoundError') {
-        return next(new NotFoundErr('Пользователь не найден'));
-      } else {
-        return next(err);
-      }
-    });
+    .catch(next);
 };
 
 const getUserById = (req, res, next) => {
@@ -40,8 +29,6 @@ const getUserById = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         return next(new BadRequestErr('Переданы неверные данные'));
-      } else if (err.name === 'DocumentNotFoundError') {
-        return next(new NotFoundErr('Пользователь не найден'));
       } else {
         return next(err);
       }
@@ -101,9 +88,7 @@ const patchUserInfo = (req, res, next) => {
       res.status(200).send(user);
     })
     .catch((err) => {
-      if (err.name === 'DocumentNotFoundError') {
-        return next(new NotFoundErr('Пользователь не найден'));
-      } else if (err.name === 'ValidationError' || err.name === 'CastError') {
+      if (err.name === 'ValidationError') {
         return next(new BadRequestErr('Переданы неверные данные'));
       } else {
         return next(err);
@@ -122,9 +107,7 @@ const patchUserAvatar = (req, res, next) => {
       res.status(200).send(user);
     })
     .catch((err) => {
-      if (err.name === 'DocumentNotFoundError') {
-        return next(new NotFoundErr('Пользователь не найден'));
-      } else if (err.name === 'ValidationError' || err.name === 'CastError') {
+      if (err.name === 'ValidationError') {
         return next(new BadRequestErr('Переданы неверные данные'));
       } else {
         return next(err);
@@ -136,6 +119,7 @@ const login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
+    .orFail()
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
