@@ -33,11 +33,10 @@ const createCard = (req, res, next) => {
 
 const deleteCard = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId)
-    .orFail()
     // eslint-disable-next-line consistent-return
     .then((card) => {
       if (!card) {
-        throw new NotFoundErr('Карточка не найдена');
+        return next(new NotFoundErr('Карточка не найдена'));
       }
       if (!card.owner.equals(req.user._id)) {
         return next(new ForbiddenErr('Недостаточно прав для удаления'));
