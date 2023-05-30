@@ -6,7 +6,6 @@ const { errors } = require('celebrate');
 const router = require('./routes');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
-const NotFoundErr = require('./errors/NotFoundErr');
 const { joiCreateUser, joiLoginUser } = require('./middlewares/validation');
 const centralErrorHandler = require('./middlewares/centralErrorHandler');
 
@@ -23,10 +22,6 @@ app.post('/signin', joiLoginUser, login);
 app.post('/signup', joiCreateUser, createUser);
 app.use(auth);
 app.use(router);
-// eslint-disable-next-line arrow-body-style
-app.use('/*', (req, res, next) => {
-  return next(new NotFoundErr('Страница не найдена'));
-});
 
 app.use(errors());
 
