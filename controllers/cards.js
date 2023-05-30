@@ -36,23 +36,18 @@ const deleteCard = (req, res, next) => {
     .orFail()
     // eslint-disable-next-line consistent-return
     .then((card) => {
-      if (req.user._id !== card.owner) {
-        throw new ForbiddenErr('Недостаточно прав для удаления');
+      if (!card) {
+        throw new NotFoundErr('Карточка не найдена');
+      }
+      if (card.owner.equals(req.user._id)) {
+        return next(new ForbiddenErr('Недостаточно прав для удаления'));
       }
       card.deleteOne()
         .then(() => {
           res.status(200).send({ message: 'Карточка удалена' });
         });
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return next(new BadRequestErr('Переданы неверные данные'));
-      } else if (err.name === 'DocumentNotFoundError') {
-        return next(new NotFoundErr('Карточка не найдена'));
-      } else {
-        return next(err);
-      }
-    });
+    .catch(next);
 };
 
 const likeCard = (req, res, next) => {

@@ -10,6 +10,7 @@ const {
 } = require('../controllers/cards');
 
 cardRoutes.get('/', getCards);
+
 cardRoutes.post('/', celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
